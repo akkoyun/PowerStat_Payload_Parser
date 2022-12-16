@@ -70,7 +70,7 @@ def Payload_Parser():
 			# ------------------------------------------
 
 			# Database Query
-			Query_Command = DB_Connection.query(Models.Command).filter(Models.Command.Command(Headers.Command)).first()
+			Query_Command = DB_Connection.query(Models.Command).filter(Models.Command.Command.like(Headers.Command)).first()
 
 			# Handle Record
 			if not Query_Command:
