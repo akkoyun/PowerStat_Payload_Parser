@@ -35,7 +35,52 @@ class Measurement_Type(Base):
 class Measurement_Stat(Base):
 
 	# Define Database Name
-	__tablename__ = "Measurement_Stats"
+	__tablename__ = "Measurement_Stat"
 
 	# Define Colomns
 	Stats_ID = Column(Integer, primary_key=True, nullable=False)
+	Min = Column(FLOAT, nullable=True)
+	Max = Column(FLOAT, nullable=True)
+	Average = Column(FLOAT, nullable=True)
+	Slope = Column(FLOAT, nullable=True)
+	Offset = Column(FLOAT, nullable=True)
+	R2 = Column(FLOAT, nullable=True)
+	DataCount = Column(Integer, nullable=True)
+
+# Measurement Database Model
+class Measurement(Base):
+
+	# Define Database Name
+	__tablename__ = "Measurement"
+
+	# Define Colomns
+	Measurement_ID = Column(Integer, primary_key=True, nullable=False)
+	Data_ID = Column(Integer, nullable=False)
+	Device_ID = Column(String, nullable=False)
+	Measurement = Column(FLOAT, nullable=False)
+	Stats_ID = Column(Integer, nullable=True)
+	Measurement_Type_ID = Column(Integer, nullable=False)
+
+# Command Database Model
+class Command(Base):
+
+	# Define Database Name
+	__tablename__ = "Command"
+
+	# Define Colomns
+	Command_ID = Column(Integer, primary_key=True, nullable=False)
+	Command = Column(String, nullable=False)
+	Device_Type = Column(Integer, nullable=False)
+
+# Data Stream Database Model
+class Data_Stream(Base):
+
+	# Define Database Name
+	__tablename__ = "Data_Stream"
+
+	# Define Colomns
+	Stream_ID = Column(Integer, primary_key=True, nullable=False)
+	Device_ID = Column(String, nullable=False)
+	Update_Time = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
+	Measurement_Time = Column(TIMESTAMP(timezone=True), nullable=False)
+	Command_ID = Column(Integer, nullable=False)
