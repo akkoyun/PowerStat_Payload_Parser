@@ -79,8 +79,19 @@ def Payload_Parser():
 
 			else:
 
-				print("Command Found")
+				# Create Add Record Command
+				New_Command = Models.Command(Command = Headers.Command)
 
+				# Add and Refresh DataBase
+				DB_Connection.add(New_Command)
+				DB_Connection.commit()
+				DB_Connection.refresh(New_Command)
+
+				# Set Variable
+				Variables.Command_ID = New_Command.Module_ID
+
+				# Log
+				Service_Logger.debug(f"New command detected, recording... [{Variables.Command_ID}]")
 
 
 
