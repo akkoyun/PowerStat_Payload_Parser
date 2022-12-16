@@ -60,9 +60,30 @@ def Payload_Parser():
 
 			# ------------------------------------------
 
+			# Define DB
+			DB_Connection = Database.SessionLocal()
+
+			# Handle DeviceStatus
+			if Kafka_Message.DeviceStatus is not None:
+
+				# Database Query
+				Query_DeviceStatus = DB_Connection.query(Models.Measurement_Type).filter(Models.Measurement_Type.Measurement_Pack_Name.like('DeviceStatus')).first()
+
+				# Handle Record
+				if not Query_DeviceStatus:
+
+					print("ID not Found")
+
+				else:
+
+					print("ID Found")
 
 
-			print(Kafka_Message)
+
+
+
+
+
 
 
 
