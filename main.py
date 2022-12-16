@@ -52,6 +52,7 @@ def Payload_Parser():
 			# Function Variables
 			class Variables:
 				Command_ID = 0
+				Stream_ID = 0
 
 			# Print LOG
 			Service_Logger.debug("--------------------------------------------------------------------------------")
@@ -88,57 +89,74 @@ def Payload_Parser():
 				# Set Variable
 				Variables.Command_ID = New_Command.Command_ID
 
-				# Log
-				Service_Logger.debug(f"New command detected, recording... [{Variables.Command_ID}]")
-
 			else:
 
 				# Set Variable
 				Variables.Command_ID = Query_Command.Command_ID
 
-				print(f"Command Found [{Variables.Command_ID}]")
-
-
-
-
-
-
-
 			# ------------------------------------------
 
 			# Create Add Record Command
-#			New_Stream = Models.Data_Stream(
-#				Device_ID = Headers.Device_ID,
-#				Measurement_Time = Headers.Device_Time,
-#				Command_ID = Variables.Command_ID)
+			New_Stream = Models.Data_Stream(
+				Device_ID = Headers.Device_ID,
+				Measurement_Time = Headers.Device_Time,
+				Command_ID = Variables.Command_ID)
+
+			# Add and Refresh DataBase
+			DB_Connection.add(New_Stream)
+			DB_Connection.commit()
+			DB_Connection.refresh(New_Stream)
+
+			# Get Stream ID
+			Variables.Stream_ID = New_Stream.Stream_ID
 
 			# ------------------------------------------
 
-
 			# Handle DeviceStatus
-#			if Kafka_Message.DeviceStatus is not None:
+			if Kafka_Message.DeviceStatus is not None:
+
+				# Define Measurement Type ID
+				Type_ID_DeviceStatus = 0
 
 				# Database Query
-#				Query_DeviceStatus = DB_Connection.query(Models.Measurement_Type).filter(Models.Measurement_Type.Measurement_Pack_Name.like('DeviceStatus')).first()
+				Query_DeviceStatus = DB_Connection.query(Models.Measurement_Type).filter(Models.Measurement_Type.Measurement_Pack_Name.like('DeviceStatus')).first()
 
 				# Handle Record
-#				if not Query_DeviceStatus:
-
-#					print("ID not Found")
-
-#				else:
+				if not Query_DeviceStatus:
 
 					# Create Add Record Command
-#					New_Module = Models.Measurement(
+					New_Measurement_Type_DeviceStatus = Models.Measurement_Type(
+						Measurement_Pack_Name = 'DeviceStatus',
+						Measurement_Name = 'Device Status Code')
 
+					# Add and Refresh DataBase
+					DB_Connection.add(New_Measurement_Type_DeviceStatus)
+					DB_Connection.commit()
+					DB_Connection.refresh(New_Measurement_Type_DeviceStatus)
 
+					# Set Variable
+					Type_ID_DeviceStatus = New_Measurement_Type_DeviceStatus.Measurement_Type_ID
 
+				else:
 
-#						Device_ID = Headers.Device_ID,
-#						Last_Online_Time = datetime.now(),
-#						Data_Count = 1)
+					# Set Variable
+					Type_ID_DeviceStatus = Query_DeviceStatus.Measurement_Type_ID
 
-#					print("ID Found")
+				# Create Add Record Command
+				New_DeviceStatus = Models.Measurement(
+					Data_ID = Variables.Stream_ID,
+					Device_ID = Headers.Device_ID,
+					Measurement_Type_ID = Type_ID_DeviceStatus,
+					Instant = Kafka_Message.DeviceStatus)
+
+				# Add and Refresh DataBase
+				DB_Connection.add(New_DeviceStatus)
+				DB_Connection.commit()
+				DB_Connection.refresh(New_DeviceStatus)
+
+				# Print Log
+				Service_Logger.debug(f"New measurement 'DeviceStatus' recorded... ['{New_DeviceStatus.Measurement_ID}']")
+
 
 
 
