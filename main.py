@@ -49,6 +49,10 @@ def Payload_Parser():
 				Size = Message.headers[4][1].decode('ASCII')
 				Buffer_ID = int(Message.headers[5][1].decode('ASCII'))
 
+			# Function Variables
+			class Variables:
+				Command_ID = 0
+
 			# Print LOG
 			Service_Logger.debug("--------------------------------------------------------------------------------")
 			Service_Logger.debug(f"Command     : '{Headers.Command}'")
@@ -63,22 +67,63 @@ def Payload_Parser():
 			# Define DB
 			DB_Connection = Database.SessionLocal()
 
+			# ------------------------------------------
+
+			# Database Query
+			Query_Command = DB_Connection.query(Models.Command).filter(Models.Command.Command(Headers.Command)).first()
+
+			# Handle Record
+			if not Query_Command:
+
+				print("Command not Found")
+
+			else:
+
+				print("Command Found")
+
+
+
+
+
+
+
+
+
+			# ------------------------------------------
+
+			# Create Add Record Command
+#			New_Stream = Models.Data_Stream(
+#				Device_ID = Headers.Device_ID,
+#				Measurement_Time = Headers.Device_Time,
+#				Command_ID = Variables.Command_ID)
+
+			# ------------------------------------------
+
+
 			# Handle DeviceStatus
-			if Kafka_Message.DeviceStatus is not None:
+#			if Kafka_Message.DeviceStatus is not None:
 
 				# Database Query
-				Query_DeviceStatus = DB_Connection.query(Models.Measurement_Type).filter(Models.Measurement_Type.Measurement_Pack_Name.like('DeviceStatus')).first()
+#				Query_DeviceStatus = DB_Connection.query(Models.Measurement_Type).filter(Models.Measurement_Type.Measurement_Pack_Name.like('DeviceStatus')).first()
 
 				# Handle Record
-				if not Query_DeviceStatus:
+#				if not Query_DeviceStatus:
 
-					print("ID not Found")
+#					print("ID not Found")
 
-				else:
+#				else:
 
-					print("ID Found")
+					# Create Add Record Command
+#					New_Module = Models.Measurement(
 
 
+
+
+#						Device_ID = Headers.Device_ID,
+#						Last_Online_Time = datetime.now(),
+#						Data_Count = 1)
+
+#					print("ID Found")
 
 
 
