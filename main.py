@@ -21,7 +21,7 @@ Database.Base.metadata.create_all(bind=Database.DB_Engine)
 Kafka_Consumer = KafkaConsumer('Payload', bootstrap_servers=f"{APP_Settings.POSTOFFICE_KAFKA_HOSTNAME}:{APP_Settings.POSTOFFICE_KAFKA_PORT}", group_id="Data_Consumer", auto_offset_reset='earliest', enable_auto_commit=False)
 
 # Boot Log Message
-Service_Logger.info("API Log --> Service Started.")
+Service_Logger.debug("Service Started.")
 
 # List Finder Function
 def List_Finder(List, Variable):
@@ -59,6 +59,12 @@ def Payload_Parser():
 			Service_Logger.debug("--------------------------------------------------------------------------------")
 
 			# ------------------------------------------
+
+
+
+			print(Kafka_Message)
+
+
 
 
 			# ------------------------------------------
