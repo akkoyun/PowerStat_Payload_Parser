@@ -76,7 +76,9 @@ def Payload_Parser():
 			if not Query_Command:
 
 				# Create Add Record Command
-				New_Command = Models.Command(Command = Headers.Command)
+				New_Command = Models.Command(
+					Command = Headers.Command,
+					Device_Type = 0)
 
 				# Add and Refresh DataBase
 				DB_Connection.add(New_Command)
