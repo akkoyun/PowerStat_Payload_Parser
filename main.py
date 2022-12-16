@@ -86,7 +86,7 @@ def Payload_Parser():
 				DB_Connection.refresh(New_Command)
 
 				# Set Variable
-				Variables.Command_ID = New_Command.Module_ID
+				Variables.Command_ID = New_Command.Command_ID
 
 				# Log
 				Service_Logger.debug(f"New command detected, recording... [{Variables.Command_ID}]")
