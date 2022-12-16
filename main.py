@@ -93,7 +93,10 @@ def Payload_Parser():
 
 			else:
 
-				print("Command Found")
+				# Set Variable
+				Variables.Command_ID = Query_Command.Command_ID
+
+				print(f"Command Found [{Variables.Command_ID}]")
 
 
 
