@@ -30,22 +30,7 @@ class Measurement_Type(Base):
 	Measurement_Pack_Name = Column(String, nullable=False)
 	Measurement_Name = Column(String, nullable=False)
 	Measurement_Unit = Column(String, nullable=True)
-
-# Measurement Stat Database Model
-class Measurement_Stat(Base):
-
-	# Define Database Name
-	__tablename__ = "Measurement_Stat"
-
-	# Define Colomns
-	Stats_ID = Column(Integer, primary_key=True, nullable=False)
-	Min = Column(FLOAT, nullable=True)
-	Max = Column(FLOAT, nullable=True)
-	Average = Column(FLOAT, nullable=True)
-	Slope = Column(FLOAT, nullable=True)
-	Offset = Column(FLOAT, nullable=True)
-	R2 = Column(FLOAT, nullable=True)
-	DataCount = Column(Integer, nullable=True)
+	Measurement_Segment = Column(Integer, nullable=True)
 
 # Measurement Database Model
 class Measurement(Base):
@@ -57,9 +42,15 @@ class Measurement(Base):
 	Measurement_ID = Column(Integer, primary_key=True, nullable=False)
 	Data_ID = Column(Integer, nullable=False)
 	Device_ID = Column(String, nullable=False)
-	Measurement = Column(FLOAT, nullable=False)
-	Stats_ID = Column(Integer, nullable=True)
 	Measurement_Type_ID = Column(Integer, nullable=False)
+	Instant = Column(FLOAT, nullable=False)
+	Min = Column(FLOAT, nullable=True)
+	Max = Column(FLOAT, nullable=True)
+	Average = Column(FLOAT, nullable=True)
+	Slope = Column(FLOAT, nullable=True)
+	Offset = Column(FLOAT, nullable=True)
+	R2 = Column(FLOAT, nullable=True)
+	DataCount = Column(Integer, nullable=True)
 
 # Command Database Model
 class Command(Base):
