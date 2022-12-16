@@ -75,10 +75,6 @@ def Payload_Parser():
 			# Handle Record
 			if not Query_Command:
 
-				print("Command not Found")
-
-			else:
-
 				# Create Add Record Command
 				New_Command = Models.Command(Command = Headers.Command)
 
@@ -93,6 +89,9 @@ def Payload_Parser():
 				# Log
 				Service_Logger.debug(f"New command detected, recording... [{Variables.Command_ID}]")
 
+			else:
+
+				print("Command Found")
 
 
 
