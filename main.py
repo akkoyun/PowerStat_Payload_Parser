@@ -18,7 +18,7 @@ coloredlogs.install(level='DEBUG', logger=Service_Logger)
 Database.Base.metadata.create_all(bind=Database.DB_Engine)
 
 # Kafka Consumer
-Kafka_Consumer = KafkaConsumer('Payload', bootstrap_servers=f"{APP_Settings.POSTOFFICE_KAFKA_HOSTNAME}:{APP_Settings.POSTOFFICE_KAFKA_PORT}", group_id="Data_Consumer", auto_offset_reset='earliest', enable_auto_commit=False)
+Kafka_Consumer = KafkaConsumer('PowerStat.Payload', bootstrap_servers=f"{APP_Settings.POSTOFFICE_KAFKA_HOSTNAME}:{APP_Settings.POSTOFFICE_KAFKA_PORT}", group_id="Data_Consumer", auto_offset_reset='earliest', enable_auto_commit=False)
 
 # Boot Log Message
 Service_Logger.debug("Service Started.")
@@ -38,7 +38,7 @@ def Payload_Parser():
 		for Message in Kafka_Consumer:
 
 			# handle Message.
-			Kafka_Message = Schema.IoT_Data_Pack_Payload(**json.loads(Message.value.decode()))
+			Kafka_Message = Schema.IoT_Data_Pack_Payload_PowerStat(**json.loads(Message.value.decode()))
 
 			# Handle Headers
 			class Headers:
