@@ -212,6 +212,9 @@ def Payload_Parser():
 
 			# ------------------------------------------
 
+			# Close Database
+			DB_Connection.close()
+
 			# Commit Message
 			Kafka_Consumer.commit()
 
