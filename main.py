@@ -202,6 +202,57 @@ def Payload_Parser():
 				# Print Log
 				Service_Logger.debug(f"New measurement 'FaultStatus' recorded... ['{New_FaultStatus.Measurement_ID}']")
 
+			# Handle Pressure
+			if Kafka_Message.Pressure is not None:
+
+				# Define Measurement Type ID
+				Type_ID_Pressure = 0
+
+				# Database Query
+				Query_Pressure = DB_Connection.query(Models.Measurement_Type).filter(Models.Measurement_Type.Measurement_Pack_Name.like('Pressure')).first()
+
+				# Handle Record
+				if not Query_Pressure:
+
+					# Create Add Record Command
+					New_Measurement_Type_Pressure = Models.Measurement_Type(
+						Measurement_Pack_Name = 'Pressure',
+						Measurement_Name = 'Pressure Measurement')
+
+					# Add and Refresh DataBase
+					DB_Connection.add(New_Measurement_Type_Pressure)
+					DB_Connection.commit()
+					DB_Connection.refresh(New_Measurement_Type_Pressure)
+
+					# Set Variable
+					Type_ID_FaultStatus = New_Measurement_Type_Pressure.Measurement_Type_ID
+
+				else:
+
+					# Set Variable
+					Type_ID_Pressure = Query_Pressure.Measurement_Type_ID
+
+				# Create Add Record Command
+				New_Pressure = Models.Measurement(
+					Data_ID = Variables.Stream_ID,
+					Device_ID = Headers.Device_ID,
+					Measurement_Type_ID = Type_ID_Pressure,
+					Instant =Kafka_Message.Pressure.Inst,
+					Min = Kafka_Message.Pressure.Min,
+					Max = Kafka_Message.Pressure.Max,
+					Average = Kafka_Message.Pressure.Avg,
+					Slope = Kafka_Message.Pressure.Slope,
+					Offset = Kafka_Message.Pressure.Offset,
+					R2 = Kafka_Message.Pressure.R2,
+					DataCount = Kafka_Message.Pressure.DataCount)
+
+				# Add and Refresh DataBase
+				DB_Connection.add(New_Pressure)
+				DB_Connection.commit()
+				DB_Connection.refresh(New_Pressure)
+
+				# Print Log
+				Service_Logger.debug(f"New measurement 'Pressure' recorded... ['{New_Pressure.Measurement_ID}']")
 
 
 
