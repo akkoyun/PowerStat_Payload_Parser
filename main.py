@@ -138,9 +138,9 @@ def Payload_Parser():
 					Service_Logger.debug(f"New status detected [{Kafka_Message.DeviceStatus} - {Kafka_Message.FaultStatus}], recording... [{New_Status.Status_ID}]")
 
 				else:
-					print(Query_Status.DeviceStatus, " - ", Query_Status.FaultStatus)
+					print(Query_Status.Device_Status, " - ", Query_Status.Fault_Status)
 					# Control for new location
-					if Query_Status.DeviceStatus != Kafka_Message.DeviceStatus or Query_Status.FaultStatus != Kafka_Message.FaultStatus:
+					if Query_Status.Device_Status != Kafka_Message.DeviceStatus or Query_Status.Fault_Status != Kafka_Message.FaultStatus:
 
 						# Create Add Record Command
 						ReNew_Status = Models.Status(
