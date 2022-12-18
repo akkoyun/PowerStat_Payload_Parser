@@ -32,6 +32,19 @@ class Measurement_Type(Base):
 	Measurement_Unit = Column(String, nullable=True)
 	Measurement_Segment = Column(Integer, nullable=True)
 
+# Status Database Model
+class Status(Base):
+
+	# Define Database Name
+	__tablename__ = "Status"
+
+	# Define Colomns
+	Status_ID = Column(Integer, primary_key=True, nullable=False)
+	Data_ID = Column(Integer, nullable=False)
+	Device_ID = Column(String, nullable=False)
+	Device_Status = Column(Integer, nullable=False)
+	Fault_Status = Column(Integer, nullable=False)
+
 # Measurement Database Model
 class Measurement(Base):
 

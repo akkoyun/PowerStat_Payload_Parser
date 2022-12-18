@@ -112,95 +112,60 @@ def Payload_Parser():
 
 			# ------------------------------------------
 
-			# Handle DeviceStatus
-			if Kafka_Message.DeviceStatus is not None:
-
-				# Define Measurement Type ID
-				Type_ID_DeviceStatus = 0
+			# Handle DeviceStatus and FaultStatus
+			if Kafka_Message.DeviceStatus is not None and Kafka_Message.FaultStatus is not None:
 
 				# Database Query
-				Query_DeviceStatus = DB_Connection.query(Models.Measurement_Type).filter(Models.Measurement_Type.Measurement_Pack_Name.like('DeviceStatus')).first()
+				Query_Status = DB_Connection.query(Models.Status).filter(
+					Models.Status.Device_ID.like(Headers.Device_ID)).order_by(Models.Status.Status_ID.desc()).first()
 
 				# Handle Record
-				if not Query_DeviceStatus:
+				if not Query_Status:
 
 					# Create Add Record Command
-					New_Measurement_Type_DeviceStatus = Models.Measurement_Type(
-						Measurement_Pack_Name = 'DeviceStatus',
-						Measurement_Name = 'Device Status Code')
+					New_Status = Models.Status(
+						Data_ID = Variables.Stream_ID,
+						Device_ID = Headers.Device_ID,
+						Device_Status = Kafka_Message.DeviceStatus,
+						Fault_Status = Kafka_Message.FaultStatus)
 
 					# Add and Refresh DataBase
-					DB_Connection.add(New_Measurement_Type_DeviceStatus)
+					DB_Connection.add(New_Status)
 					DB_Connection.commit()
-					DB_Connection.refresh(New_Measurement_Type_DeviceStatus)
+					DB_Connection.refresh(New_Status)
 
-					# Set Variable
-					Type_ID_DeviceStatus = New_Measurement_Type_DeviceStatus.Measurement_Type_ID
+					# Log
+					Service_Logger.debug(f"New status detected [{Kafka_Message.DeviceStatus} - {Kafka_Message.FaultStatus}], recording... [{New_Status.Status_ID}]")
 
 				else:
 
-					# Set Variable
-					Type_ID_DeviceStatus = Query_DeviceStatus.Measurement_Type_ID
+					# Control for new location
+					if List_Finder(Query_Status, "DeviceStatus") != Kafka_Message.DeviceStatus or List_Finder(Query_Status, "FaultStatus") != Kafka_Message.FaultStatus:
 
-				# Create Add Record Command
-				New_DeviceStatus = Models.Measurement(
-					Data_ID = Variables.Stream_ID,
-					Device_ID = Headers.Device_ID,
-					Measurement_Type_ID = Type_ID_DeviceStatus,
-					Instant = Kafka_Message.DeviceStatus)
+						# Create Add Record Command
+						ReNew_Status = Models.Status(
+							Data_ID = Variables.Stream_ID,
+							Device_ID = Headers.Device_ID,
+							Device_Status = Kafka_Message.DeviceStatus,
+							Fault_Status = Kafka_Message.FaultStatus)
 
-				# Add and Refresh DataBase
-				DB_Connection.add(New_DeviceStatus)
-				DB_Connection.commit()
-				DB_Connection.refresh(New_DeviceStatus)
+						# Add and Refresh DataBase
+						DB_Connection.add(ReNew_Status)
+						DB_Connection.commit()
+						DB_Connection.refresh(ReNew_Status)
 
-				# Print Log
-				Service_Logger.debug(f"New measurement 'DeviceStatus' recorded... ['{New_DeviceStatus.Measurement_ID}']")
+						# LOG
+						Service_Logger.debug(f"Status data updated [{ReNew_Status.Status_ID}]")
 
-			# Handle FaultStatus
-			if Kafka_Message.FaultStatus is not None:
+					else:
 
-				# Define Measurement Type ID
-				Type_ID_FaultStatus = 0
+						# LOG
+						Service_Logger.warning(f"Status not changed, bypassing...")
 
-				# Database Query
-				Query_FaultStatus = DB_Connection.query(Models.Measurement_Type).filter(Models.Measurement_Type.Measurement_Pack_Name.like('FaultStatus')).first()
+			else:
 
-				# Handle Record
-				if not Query_FaultStatus:
-
-					# Create Add Record Command
-					New_Measurement_Type_FaultStatus = Models.Measurement_Type(
-						Measurement_Pack_Name = 'FaultStatus',
-						Measurement_Name = 'Device Fault Status Code')
-
-					# Add and Refresh DataBase
-					DB_Connection.add(New_Measurement_Type_FaultStatus)
-					DB_Connection.commit()
-					DB_Connection.refresh(New_Measurement_Type_FaultStatus)
-
-					# Set Variable
-					Type_ID_FaultStatus = New_Measurement_Type_FaultStatus.Measurement_Type_ID
-
-				else:
-
-					# Set Variable
-					Type_ID_FaultStatus = Query_FaultStatus.Measurement_Type_ID
-
-				# Create Add Record Command
-				New_FaultStatus = Models.Measurement(
-					Data_ID = Variables.Stream_ID,
-					Device_ID = Headers.Device_ID,
-					Measurement_Type_ID = Type_ID_FaultStatus,
-					Instant = Kafka_Message.FaultStatus)
-
-				# Add and Refresh DataBase
-				DB_Connection.add(New_FaultStatus)
-				DB_Connection.commit()
-				DB_Connection.refresh(New_FaultStatus)
-
-				# Print Log
-				Service_Logger.debug(f"New measurement 'FaultStatus' recorded... ['{New_FaultStatus.Measurement_ID}']")
+				# LOG
+				Service_Logger.warning("There is no status data, bypassing...")
 
 			# Handle Pressure
 			if Kafka_Message.Pressure is not None:
@@ -253,6 +218,14 @@ def Payload_Parser():
 
 				# Print Log
 				Service_Logger.debug(f"New measurement 'Pressure' recorded... ['{New_Pressure.Measurement_ID}']")
+
+			else:
+
+				# LOG
+				Service_Logger.warning("There is no pressure data, bypassing...")
+
+
+
 
 
 
